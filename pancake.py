@@ -1,3 +1,5 @@
+import os
+os.chdir(os.path.abspath(os.path.dirname( __file__ )).replace("\\lib\\library.zip", ""))#should help if program being executed from another folder. ".replace" is to change directory in the exe file
 import tkinter as tk
 import tkinter.font as tkFont
 from PIL import Image, ImageTk
@@ -12,15 +14,20 @@ class App:
         self.icon = tk.PhotoImage()
         self.img = Image.Image()
         app_methods.initwindow(self)
+        
+        self.CDtrivia = 0
         self.BtTrivia = tk.Button(root, text="Trivia", command=self.start_countdown_trivia)
         self.BtTrivia.place(relx=0.05, rely=0.1, width=135, height=40)
 
+        self.CDwork = 0
         self.BtWork = tk.Button(root, text="Work", command=self.start_countdown_work)
         self.BtWork.place(relx=0.05, rely=0.3, width=135, height=40)
 
+        self.CDfish = 0
         self.BtFish = tk.Button(root, text="Fish", command=self.start_countdown_fish)
         self.BtFish.place(relx=0.05, rely=0.5, width=135, height=40)
 
+        self.CDhighlow = 0
         self.BtHighlow = tk.Button(root, text="High low", command=self.start_countdown_highlow)
         self.BtHighlow.place(relx=0.05, rely=0.7, width=135, height=40)
 
@@ -37,27 +44,24 @@ class App:
     def get_answer(self):
         self.labelAns.config(text="")
         text = self.txtrivia.get(1.0, "end-1c")
+        text = text.strip("\n ")
         if text == "":
             self.labelAns.config(text="please enter question")
         else:
             conn = sqlite3.connect('./tdb.db')
-            finalq = ""
-            if "\n" in text:
-                text = text[:text.index("\n")]
-            for letter in text:
-                finalq += letter
-                if letter == '"':
-                    finalq += letter
-            sql = f'SELECT answer FROM trivia where question like "%{finalq}%";'
+            sql = f'SELECT answer FROM trivia where question like "%{text}%";'
             cursor = conn.execute(sql).fetchall()
             self.labelAns.config(text=cursor[0][0])
             conn.close()
 
 
     def start_countdown_trivia(self):
-        self.CDtrivia = 600  # reset the countdown timer
         self.BtTrivia.config(state="disabled")
-        self.update_button_trivia()
+        if self.CDtrivia > 0:
+            self.CDtrivia = 600
+        else:
+            self.CDtrivia = 600  # reset the countdown timer
+            self.update_button_trivia()
 
 
     def update_button_trivia(self):
@@ -72,9 +76,12 @@ class App:
 
 
     def start_countdown_work(self):
-        self.CDwork = 300  # reset the countdown timer
         self.BtWork.config(state="disabled")
-        self.update_button_work()
+        if self.CDwork > 0:
+            self.CDwork = 300
+        else:
+            self.CDwork = 300  # reset the countdown timer
+            self.update_button_work()
 
 
     def update_button_work(self):
@@ -89,9 +96,12 @@ class App:
 
 
     def start_countdown_fish(self):
-        self.CDfish = 60  # reset the countdown timer
         self.BtFish.config(state="disabled")
-        self.update_button_fish()
+        if self.CDfish > 0:
+            self.CDfish = 60
+        else:
+            self.CDfish = 60  # reset the countdown timer
+            self.update_button_fish()
 
 
     def update_button_fish(self):
@@ -106,9 +116,12 @@ class App:
     
 
     def start_countdown_highlow(self):
-        self.CDhighlow = 30  # reset the countdown timer
         self.BtHighlow.config(state="disabled")
-        self.update_button_highlow()
+        if self.CDhighlow > 0:
+            self.CDhighlow = 30
+        else:
+            self.CDhighlow = 30  # reset the countdown timer
+            self.update_button_highlow()
 
 
     def update_button_highlow(self):
