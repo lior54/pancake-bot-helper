@@ -49,7 +49,12 @@ class App:
             self.labelAns.config(text="please enter question")
         else:
             conn = sqlite3.connect('./tdb.db')
-            sql = f'SELECT answer FROM trivia where question like "%{text}%";'
+            question = ""
+            for letter in text:
+                question += letter
+                if letter == '"':
+                    question += letter
+            sql = f'SELECT answer FROM trivia where question like "%{question}%";'
             cursor = conn.execute(sql).fetchall()
             self.labelAns.config(text=cursor[0][0])
             conn.close()
